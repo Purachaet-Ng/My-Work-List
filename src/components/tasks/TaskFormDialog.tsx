@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useActionState, useEffect, useId, useRef, useState } from "react";
+import { startTransition, useActionState, useEffect, useId, useRef, useState } from "react";
 import { createTask, updateTask, type ActionResult } from "@/app/tasks/actions";
 import type { Task, TaskStatus } from "@/lib/tasks";
 import { Button, IconButton } from "@/components/ui/Button";
@@ -24,7 +24,15 @@ export function TaskFormDialog({
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
-  const [state, formAction, pending] = useActionState<ActionResult, FormData>(task ? updateTask : createTask, {});
+  const save = task ? updateTask : createTask;
+  const [state, formAction, pending] = useActionState<ActionResult, FormData>(async (prev, formData) => {
+    try {
+      return await save(prev, formData);
+    } catch {
+      // A network failure rejects the action; report it here instead of letting it reach error.tsx.
+      return { error: "Couldn't save your task. Check your connection and try again." };
+    }
+  }, {});
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
   const [titleError, setTitleError] = useState<string>();
@@ -50,14 +58,17 @@ export function TaskFormDialog({
       className="m-auto w-[calc(100%-3rem)] max-w-120 rounded-card border border-border bg-card text-foreground shadow-panel backdrop:bg-foreground/40 max-sm:h-full max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:rounded-none max-sm:border-0"
     >
       <form
-        action={formAction}
         noValidate
         onSubmit={(e) => {
+          // Not the form's `action` prop: React resets the form after an action, wiping fields on a failed save.
+          e.preventDefault();
           if (!title.trim()) {
-            e.preventDefault();
             setTitleError("Title is required");
             (e.currentTarget.elements.namedItem("title") as HTMLInputElement).focus();
+            return;
           }
+          const data = new FormData(e.currentTarget);
+          startTransition(() => formAction(data));
         }}
         className="flex h-full flex-col"
       >
