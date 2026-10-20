@@ -43,7 +43,7 @@ The Thunder theme is `src/design-system/t1-tailwind-v4.css`, copied verbatim and
 
 ## Security check
 
-`scripts/rls-check.mjs`, which signs up two users and checks that neither can touch the other's tasks and that a logged-out client can't touch any, is **not written yet**.
+Run `node --env-file=.env.local scripts/rls-check.mjs`. It signs up two throwaway users (so "Confirm email" must be off), checks that neither can read, change, delete or take over the other's tasks and that a logged-out client can do nothing, then exits non-zero on any leak. The two users stay in Supabase Auth afterwards; delete them in the dashboard if you like.
 
 ## Deployment
 
