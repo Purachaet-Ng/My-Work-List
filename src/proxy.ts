@@ -31,7 +31,8 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   const target =
-    !loggedIn && path.startsWith("/tasks") ? "/login"
+    path === "/" ? (loggedIn ? "/tasks" : "/login")
+    : !loggedIn && path.startsWith("/tasks") ? "/login"
     : loggedIn && AUTH_PAGES.includes(path) ? "/tasks"
     : null;
   if (!target) return response;
