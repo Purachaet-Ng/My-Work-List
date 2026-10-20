@@ -29,7 +29,11 @@ export function ConfirmDialog({
 
   useEffect(() => {
     const dialog = ref.current;
-    if (open && !dialog?.open) dialog?.showModal();
+    if (open && !dialog?.open) {
+      // showModal() focuses the [autofocus] element (Cancel); React's autoFocus prop doesn't render it.
+      dialog?.querySelector("button")?.setAttribute("autofocus", "");
+      dialog?.showModal();
+    }
     if (!open && dialog?.open) dialog.close();
   }, [open]);
 
@@ -52,7 +56,7 @@ export function ConfirmDialog({
       </h2>
       <p className="mt-2 text-sm text-muted-foreground">{children}</p>
       <div className="mt-6 flex justify-end gap-2 max-sm:[&>*]:flex-1">
-        <Button variant="secondary" autoFocus disabled={pending} onClick={onCancel}>
+        <Button variant="secondary" disabled={pending} onClick={onCancel}>
           Cancel
         </Button>
         <Button variant="destructive" loading={pending} onClick={onConfirm}>

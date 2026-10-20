@@ -30,6 +30,8 @@ export function TaskFormDialog({
   const [titleError, setTitleError] = useState<string>();
 
   useEffect(() => {
+    // showModal() focuses the [autofocus] element; React's autoFocus prop doesn't render that attribute.
+    ref.current?.querySelector("#task-title")?.setAttribute("autofocus", "");
     ref.current?.showModal();
   }, []);
 
@@ -88,7 +90,6 @@ export function TaskFormDialog({
               setTitleError(undefined);
             }}
             error={titleError}
-            autoFocus
           />
           <TextAreaField
             id="task-description"
