@@ -41,6 +41,15 @@ Hiding buttons or filtering in the UI is not the protection; the policies are.
 
 The Thunder theme is `src/design-system/t1-tailwind-v4.css`, copied verbatim and not edited. It is imported first in `src/app/globals.css`, because its Google Fonts `@import` has to come before other rules. Components use the theme's token classes (`bg-card`, `text-muted-foreground`, `rounded-pill`, …). Shared pieces are in `src/components/ui`, and `/components` shows them.
 
+**Source and version**
+- Design System: `thunderone-ui` skill **v0.2.0**, as vendored in `rdThunderThailand/thunder_one_prj` (ADR 0096, commit `32d0e25`).
+- Theme file: `src/design-system/t1-tailwind-v4.css`, copied unchanged from `thunder_one_prj` @ `a5f299c` (2026-10-16).
+  sha256 `216b458313453778d90f03a1750858f1416113835a656382e93a2e894e546a1f`. It was generated from the skill's `tokens.json`
+  (sha256 `49070c53f85b2da4a1c12e98a6340af5dad5505a5382b15017b01a1486142e62`).
+- Why a copy instead of the `@rdthunderthailand/thunderone-theme` package: the package registry needs a login, and a copy
+  keeps that token out of the Vercel build. The reference project vendors the same file.
+- To check it: `sha256sum src/design-system/t1-tailwind-v4.css` must match the hash above.
+
 ## Security check
 
 Run `node --env-file=.env.local scripts/rls-check.mjs`. It signs up two throwaway users (so "Confirm email" must be off), checks that neither can read, change, delete or take over the other's tasks and that a logged-out client can do nothing, then exits non-zero on any leak. The two users stay in Supabase Auth afterwards; delete them in the dashboard if you like.
